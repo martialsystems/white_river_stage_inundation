@@ -1,6 +1,6 @@
 # Agent notes: white_river_stage_inundation
 
-Private GitHub. MIT on this snapshot. Geography is USGS 03351000 Nora on HUC-8 05120201. Sibling `~/indiana_flood_completion` is frozen. Do not edit it. Do not recompute HAND. Do not add a second HUC, gSSURGO C2, citywide roads, or a model trained on FEMA.
+Public GitHub. MIT on this snapshot. Geography is USGS 03351000 Nora on HUC-8 05120201. Sibling https://github.com/martialsystems/indiana_flood_completion is frozen. Do not edit it. Do not recompute HAND. Do not add a second HUC, gSSURGO C2, citywide roads, or a model trained on FEMA.
 
 ## Formula
 

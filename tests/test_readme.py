@@ -21,5 +21,7 @@ def test_license_mit_and_readme_lead() -> None:
     assert "three_wet_crest_2026-08-15.png" in README
     assert "leftover SFHA" in README
     assert "interview_note.pdf" in README
-    assert "indiana_flood_completion" in README
+    assert "https://github.com/martialsystems/indiana_flood_completion" in README
+    assert "three_wet.png" in README
+    assert "gitignored" in README
     assert ".venv/bin/python -m pytest tests -q" in README

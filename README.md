@@ -6,7 +6,9 @@ Live Δ is **1.09 m**: 3DEP at the channel sits 2.26 m above gage zero, so flood
 
 A second PNG uses the same window, hashes, and `h_channel` at the NWS NORI3 **21.18 ft** crest of **2026-08-15** (provisional). WSE = 731.69 ft NAVD88. New Δ, new file `logs/nora_live/three_wet_crest_2026-08-15.png`. Extra 679 wet cells filled leftover SFHA (dry 369 to 50); unshaded X wet 38 to 338; IoU 0.73 to 0.76 on drain-to-reach. Same model. v1 stays frozen. This tree stops at those two figures.
 
-Sibling `indiana_flood_completion` stays frozen. This tree does not recompute HAND, does not train on FEMA, and does not paint the whole HUC.
+Live rasters under `logs/*/rasters/` and `*.tif` stay gitignored; `logs/nora_live/three_wet.png` and `logs/nora_live/three_wet_crest_2026-08-15.png` are the committed figures.
+
+Sibling https://github.com/martialsystems/indiana_flood_completion stays frozen. This tree does not recompute HAND, does not train on FEMA, and does not paint the whole HUC.
 
 | Layer | Meaning |
 |-------|---------|
@@ -31,7 +33,7 @@ Live sibling freeze (HAND, DEM, stream paint, P, zone, transform `479ac376…`):
 PYTHONPATH=src:. python3 -c "from stageflood.pipeline import check_live_sibling; print(check_live_sibling())"
 ```
 
-Interview note: [docs/interview_note.pdf](docs/interview_note.pdf). Two figures, two Delta values, leftover-SFHA split. v1 PNG frozen. Combined with the HUC map-completion note in public `indiana_flood_completion` as `docs/interview_note.pdf`.
+Interview note: [docs/interview_note.pdf](docs/interview_note.pdf). Two figures, two Delta values, leftover-SFHA split. v1 PNG frozen. Combined with the HUC map-completion note at https://github.com/martialsystems/indiana_flood_completion/blob/main/docs/interview_note.pdf.
 
 ## GraphForge
 

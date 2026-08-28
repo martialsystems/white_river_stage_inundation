@@ -9,7 +9,7 @@ Status as of **2026-08-28:** 32×32 fixture (HAND 0 / 2, Δ = 1 m) and live Nora
 - [x] Fixture path (`scripts/run_fixture.py`): channel wet, bank dry
 - [x] Claim scanner
 - [x] Live sibling band hashes (HAND, DEM, stream paint, P, zone, transform)
-- [x] Private GitHub remote (`martialsystems/white_river_stage_inundation`; MIT)
+- [x] Public GitHub remote (`https://github.com/martialsystems/white_river_stage_inundation`; MIT)
 
 ## Later
 
