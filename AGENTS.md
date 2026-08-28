@@ -4,7 +4,7 @@ Private GitHub. MIT on this snapshot. Geography is USGS 03351000 Nora on HUC-8 0
 
 ## Formula
 
-WSE_ft = 710.51 + stage (NAVD88). `h_channel` is sibling DEM at the White River cell nearest the gage, not gage zero. Wet iff D8 drain-to-reach and finite HAND and `HAND < Δ`, `Δ = WSE − h_channel`. Paint uses stage/WSE, not Q. `P(sfha | hydro)` is map-completion, not water at 11 ft.
+WSE_ft = 710.51 + stage (NAVD88). `h_channel` is sibling DEM at the White River cell nearest the gage, not gage zero. Wet iff D8 drain-to-reach and finite HAND and `HAND < Δ`, `Δ = WSE − h_channel`. Live Δ = 1.09 m is the 3DEP offset result; caption it, do not treat it as a bug. Paint uses stage/WSE, not Q. `P(sfha | hydro)` is map-completion, not water at 11 ft. IoU is drain-to-reach only.
 
 ## Stages
 

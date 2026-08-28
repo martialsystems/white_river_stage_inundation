@@ -1,4 +1,6 @@
 {
+  "d8_byte_identical_to_sibling_stage_b": false,
+  "d8_note": "Window D8 rebuilt from DEM + HAND=0 stream paint + White River. Sibling has no flowdir.tif. Paths are not byte-identical to sibling Stage B. HAND not recomputed.",
   "datum_ft_navd88": 710.51,
   "datum_m": 216.563448,
   "delta_m": 1.091937697265621,

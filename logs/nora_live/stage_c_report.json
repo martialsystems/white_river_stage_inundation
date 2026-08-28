@@ -1,10 +1,15 @@
 {
+  "d8_byte_identical_to_sibling_stage_b": false,
   "figure": "logs/nora_live/three_wet.png",
+  "figure_delta_line": "\u0394 = 1.09 m (3.6 ft of water above the DEM). 3DEP at the channel is 2.26 m above gage zero. 7.4 ft of the 11 ft stage is inside the unresolved channel.",
+  "figure_footer": "P(sfha | hydro) \u2265 0.75 is sibling map-completion, not water at 11 ft. IoU SFHA vs stage wet = 0.73 on drain-to-reach cells only.",
+  "figure_title": "03351000 NWS flood stage 11.0 ft: cells below 721.51 ft WSE on the reach",
   "hand_mask_is_firm": false,
   "hand_recomputed": false,
   "iou_p_wet": 0.2706766917293233,
   "iou_sfha_p": 0.20986842105263157,
   "iou_sfha_wet": 0.7318007662835249,
+  "iou_universe": "drain-to-reach",
   "kind": "live",
   "n_p_ge_t": 324,
   "n_reach_comparable": 2604,
@@ -16,5 +21,6 @@
   "p_definition": "P(sfha | hydro)",
   "p_headline_t": 0.75,
   "p_is_forecast": false,
-  "stage": "C"
+  "stage": "C",
+  "wet_meaning": "cells below 721.51 ft WSE among cells that drain to this 5 km reach"
 }

@@ -31,7 +31,7 @@ from stageflood.config import (
 )
 from stageflood.d8 import flowdir_from_dem
 from stageflood.errors import ChannelUnlockedError, GateError
-from stageflood.figure import write_three_panel
+from stageflood.figure import depth_note, reach_footer, reach_title, write_three_panel
 from stageflood.http import GetBytes, GetJson
 from stageflood.nhd import fetch_white_river_flowlines, ftype_counts, rasterize_white_river
 from stageflood.nwis import fetch_exsa_rating
@@ -227,6 +227,12 @@ def run_stage_a_live(
         "tributary_rule": "D8 drain to the White River window, not Euclidean near the gage",
         "nhd_n_features": len(features),
         "nhd_ftype_counts": ftype_counts(features),
+        "d8_byte_identical_to_sibling_stage_b": False,
+        "d8_note": (
+            "Window D8 rebuilt from DEM + HAND=0 stream paint + White River. "
+            "Sibling has no flowdir.tif. Paths are not byte-identical to sibling Stage B. "
+            "HAND not recomputed."
+        ),
         "hand_recomputed": False,
         "p_is_forecast": False,
         "hand_mask_is_firm": False,
@@ -291,6 +297,7 @@ def run_stage_b_live(out_dir: Path) -> dict[str, Any]:
         "huc_wide": huc_wide,
         "delta_m": float(a["delta_m"]),
         "wet_rule": "D8 drain-to-reach and finite HAND and HAND < Δ; not Euclidean to the gage",
+        "d8_byte_identical_to_sibling_stage_b": False,
         "hand_recomputed": False,
         "p_is_forecast": False,
         "hand_mask_is_firm": False,
@@ -340,10 +347,14 @@ def run_stage_c_live(out_dir: Path) -> dict[str, Any]:
         huc_cell_count=huc_cells,
     )
     a = json.loads((Path(out_dir) / "stage_a_report.json").read_text(encoding="utf-8"))
-    title = (
-        f"{GAGE_ID} {PRIMARY_STAGE_LABEL} {PRIMARY_STAGE_FT} ft; "
-        f"Δ={float(a['delta_m']):.2f} m; {P_DEFINITION} is a map layer"
+    wse_ft = float(a["wse_ft_navd88"])
+    title = reach_title(wse_ft=wse_ft)
+    delta_line = depth_note(
+        delta_m=float(a["delta_m"]),
+        dem_minus_datum_m=float(a["dem_minus_datum_m"]),
+        dem_source="3DEP at the channel",
     )
+    footer = reach_footer(iou_sfha_wet=float(table["iou_sfha_wet"]))
     fig = write_three_panel(
         Path(out_dir) / "three_wet.png",
         wet=wet,
@@ -351,17 +362,27 @@ def run_stage_c_live(out_dir: Path) -> dict[str, Any]:
         p_cal=p_cal,
         drain_to_reach=drain,
         title=title,
+        delta_line=delta_line,
+        footer=footer,
         huc_cell_count=huc_cells,
     )
     report = {
         "stage": "C",
         "kind": "live",
         "figure": str(fig),
+        "figure_title": title,
+        "figure_delta_line": delta_line,
+        "figure_footer": footer,
+        "wet_meaning": (
+            f"cells below {wse_ft:.2f} ft WSE among cells that drain to this "
+            f"{float(a['reach_along_m']) / 1000.0:.0f} km reach"
+        ),
         "p_definition": P_DEFINITION,
         "p_headline_t": P_HEADLINE_T,
         "p_is_forecast": False,
         "hand_mask_is_firm": False,
         "hand_recomputed": False,
+        "d8_byte_identical_to_sibling_stage_b": False,
         **table,
     }
     _write_json(Path(out_dir) / "stage_c_report.json", report)
@@ -477,10 +498,13 @@ def run_window_stages(
             "stage_label": PRIMARY_STAGE_LABEL,
             "rating_point_stage_ft": placed[0],
             "rating_point_q_cfs": placed[1],
+            "wse_ft_navd88": NWS_FLOOD_WSE_FT_NAVD88,
             "wse_m": wse,
             "h_channel_m": h_channel,
             "h_channel_locked": True,
             "delta_m": delta,
+            "dem_minus_datum_m": h_channel - GAGE_DATUM_FT_NAVD88 * FT_TO_M,
+            "reach_along_m": REACH_ALONG_M,
             "p_is_forecast": False,
             "hand_mask_is_firm": False,
         },

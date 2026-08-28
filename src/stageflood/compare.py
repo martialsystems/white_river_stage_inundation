@@ -63,6 +63,7 @@ def overlap_table(
         "n_sfha_and_wet": int((a & c).sum()),
         "n_sfha_dry_at_stage": int((a & ~c).sum()),
         "n_wet_unshaded_x": int((c & (z == ZONE_UNSHADED_X)).sum()),
+        "iou_universe": "drain-to-reach",
         "iou_sfha_wet": _iou(a, c),
         "iou_p_wet": _iou(b, c),
         "iou_sfha_p": _iou(a, b),

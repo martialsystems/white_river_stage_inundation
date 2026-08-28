@@ -21,6 +21,7 @@ def test_overlap_counts_and_refuses_huc_wide() -> None:
     assert t["n_stage_wet"] == 3
     assert t["n_wet_unshaded_x"] == 1
     assert t["n_sfha_dry_at_stage"] == 0
+    assert t["iou_universe"] == "drain-to-reach"
     with pytest.raises(GateError):
         overlap_table(
             wet=wet,

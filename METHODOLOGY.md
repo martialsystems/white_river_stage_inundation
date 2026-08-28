@@ -40,7 +40,9 @@ Sibling `data/interim/hand.tif` (metres, EPSG:5070, template sha256 `479ac37628b
 3. `Δ = WSE − h_channel`.
 4. A cell is wet only if all of these hold: it drains along D8 to a White River cell inside the reach window; sibling HAND is finite; `HAND < Δ`.
 
-The USGS EXSA rating places `h` on a published Q-stage curve and refuses a stage off the curve. Painting uses stage/WSE, not Q. Sibling flowdir was never written; D8 on the window is rebuilt from the sibling DEM plus HAND=0 stream paint and the White River raster. HAND values are not recomputed.
+The USGS EXSA rating places `h` on a published Q-stage curve and refuses a stage off the curve. Painting uses stage/WSE, not Q. Sibling flowdir was never written; D8 on the window is rebuilt from the sibling DEM plus HAND=0 stream paint and the White River raster. Those paths are not byte-identical to sibling Stage B. HAND values are not recomputed.
+
+Live at 03351000: Δ = 1.09 m because 3DEP at the channel is 2.26 m above gage zero. On this 30 m DEM, NWS flood stage is 3.6 ft of water above the DEM surface. The other 7.4 ft of the 11 ft stage sits in the unresolved channel. The wet mask is cells below 721.51 ft WSE among drain-to-reach cells.
 
 ## Stages
 
@@ -61,7 +63,9 @@ Captions (P cannot be read as stage):
 - P ≥ 0.75: sibling map-completion, not water at 11 ft
 - stage wet: HAND inundation at NWS flood stage
 
-Overlap: counts and IoU, plus SFHA-dry-at-stage and wet-on-unshaded-X. No PR-AUC. No retraining.
+Overlap: counts and IoU on drain-to-reach cells only, plus SFHA-dry-at-stage and wet-on-unshaded-X. Live IoU SFHA vs stage wet is 0.73 on that strip. No PR-AUC. No retraining.
+
+The three-panel figure prints Δ and the 3DEP-minus-datum offset so the 1.09 m water depth is read as the grid result.
 
 ## Claims
 
@@ -75,5 +79,6 @@ Read-only from `~/indiana_flood_completion/data/interim/`. `check_live_sibling()
 
 ## Revisions
 
+- 2026-08-28: Caption live Δ = 1.09 m and 3DEP +2.26 m on `three_wet.png`. Wet mask is cells below 721.51 ft WSE on drain-to-reach. IoU reported on drain-to-reach only. Window D8 not byte-identical to sibling Stage B.
 - 2026-08-28: Lock NAVD88 identity WSE = 710.51 + 11.0 = 721.51 ft. `h_channel` is sibling DEM at the White River cell, not gage datum. 5 km mainstem window. Three captions so P is not water at 11 ft. Band hashes on HAND/DEM/stream paint/P/zone. Live run: White River ftype 558 only, rating 11.00 ft at 10245.31 cfs, Δ = 1.09 m, 1197 wet cells on 2604 drain-to-reach cells.
 - 2026-08-27: Lock Nora reach, HAND < Δ, three-layer compare, GraphForge pin for sha / h_channel / claims.

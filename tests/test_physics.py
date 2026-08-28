@@ -10,6 +10,7 @@ from stageflood.config import (
     NWS_FLOOD_WSE_FT_NAVD88,
     PRIMARY_STAGE_FT,
 )
+from stageflood.figure import depth_note
 from stageflood.physics import paint_wet, relative_height_m, stage_to_wse_m, wse_ft_navd88
 
 
@@ -25,6 +26,14 @@ def test_wse_is_datum_plus_stage_not_channel() -> None:
     assert abs(double_count - PRIMARY_STAGE_FT * 0.3048) < 1e-9
     assert abs(delta - FIXTURE_DELTA_M) < 1e-9
     assert abs(h_channel - datum_m) > 1.0
+    note = depth_note(
+        delta_m=1.0919,
+        dem_minus_datum_m=2.2609,
+        dem_source="3DEP at the channel",
+    )
+    assert "Δ = 1.09 m" in note
+    assert "2.26 m above gage zero" in note
+    assert "3.6 ft of water above the DEM" in note
 
 
 def test_relative_height_and_paint() -> None:

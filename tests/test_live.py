@@ -76,3 +76,7 @@ def test_window_stages_channel_wet_bank_dry(tmp_path: Path) -> None:
     assert wet[STREAM_ROW - 1, GAGE_COL] == 0
     assert abs(channel_z_m() - (NWS_FLOOD_WSE_FT_NAVD88 * 0.3048 - 1.0)) < 1e-9
     assert not np.all(wet == 1)
+    assert report["iou_universe"] == "drain-to-reach"
+    assert "cells below" in report["figure_title"]
+    assert "gage zero" in report["figure_delta_line"]
+    assert "drain-to-reach cells only" in report["figure_footer"]

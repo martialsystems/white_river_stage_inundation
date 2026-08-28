@@ -12,18 +12,20 @@ import numpy as np
 from stageflood.claims import require_clean, require_paths_clean
 from stageflood.compare import overlap_table
 from stageflood.config import (
+    FT_TO_M,
     GAGE_DATUM_FT_NAVD88,
     GAGE_ID,
     GAGE_NAME,
     HYDRO_NODATA,
     LOCKED_BAND_SHA256,
+    NWS_FLOOD_WSE_FT_NAVD88,
     P_DEFINITION,
     P_HEADLINE_T,
     PRIMARY_STAGE_FT,
     PRIMARY_STAGE_LABEL,
 )
 from stageflood.errors import ChannelUnlockedError, GateError
-from stageflood.figure import write_three_panel
+from stageflood.figure import depth_note, reach_footer, reach_title, write_three_panel
 from stageflood.fixture import drain_truth, write_fixture
 from stageflood.physics import paint_wet, relative_height_m, stage_to_wse_m
 from stageflood.rating import fixture_rating, require_stage_on_rating
@@ -99,6 +101,7 @@ def run_stage_a_fixture(out_dir: Path) -> dict[str, Any]:
         "h_channel_locked": True,
         "h_channel_is_gage_datum": False,
         "delta_m": delta,
+        "dem_minus_datum_m": h_channel - GAGE_DATUM_FT_NAVD88 * FT_TO_M,
         "p_is_forecast": False,
     }
     _write_json(out_dir / "stage_a_report.json", report)
@@ -199,10 +202,14 @@ def run_stage_c_fixture(out_dir: Path) -> dict[str, Any]:
     drain = drain_to_reach(flowdir, reach, np.ones(wet.shape, dtype=bool))
     table = overlap_table(wet=wet, zone=zone, p_cal=p_cal, drain_to_reach=drain)
     a = json.loads((out_dir / "stage_a_report.json").read_text(encoding="utf-8"))
-    title = (
-        f"{GAGE_ID} {PRIMARY_STAGE_LABEL} {PRIMARY_STAGE_FT} ft; "
-        f"Δ={float(a['delta_m']):.2f} m; {P_DEFINITION} is a map layer"
+    wse_ft = float(a.get("wse_ft_navd88") or NWS_FLOOD_WSE_FT_NAVD88)
+    title = reach_title(wse_ft=wse_ft)
+    delta_line = depth_note(
+        delta_m=float(a["delta_m"]),
+        dem_minus_datum_m=float(a["dem_minus_datum_m"]),
+        dem_source="Channel DEM",
     )
+    footer = reach_footer(iou_sfha_wet=float(table["iou_sfha_wet"]))
     fig = write_three_panel(
         out_dir / "three_wet.png",
         wet=wet,
@@ -210,11 +217,16 @@ def run_stage_c_fixture(out_dir: Path) -> dict[str, Any]:
         p_cal=p_cal,
         drain_to_reach=drain,
         title=title,
+        delta_line=delta_line,
+        footer=footer,
     )
     report = {
         "stage": "C",
         "kind": "fixture",
         "figure": str(fig),
+        "figure_title": title,
+        "figure_delta_line": delta_line,
+        "figure_footer": footer,
         "p_definition": P_DEFINITION,
         "p_headline_t": P_HEADLINE_T,
         "p_is_forecast": False,

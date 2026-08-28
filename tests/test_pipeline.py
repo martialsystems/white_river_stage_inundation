@@ -19,6 +19,11 @@ def test_fixture_paints_reach_not_tributary(tmp_path: Path) -> None:
     assert report["n_stage_wet"] == REACH_C1 - REACH_C0
     assert report["n_reach_comparable"] < FIXTURE_ROWS * FIXTURE_COLS
     assert (tmp_path / "three_wet.png").is_file()
+    assert report["iou_universe"] == "drain-to-reach"
+    assert "Δ = 1.00 m" in report["figure_delta_line"]
+    assert "gage zero" in report["figure_delta_line"]
+    assert "cells below" in report["figure_title"]
+    assert "drain-to-reach cells only" in report["figure_footer"]
     a = (tmp_path / "stage_a_report.json").read_text(encoding="utf-8")
     assert str(PRIMARY_STAGE_FT) in a
     assert '"h_channel_is_gage_datum": false' in a
