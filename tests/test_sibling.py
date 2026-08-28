@@ -4,6 +4,9 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+
+pytest.importorskip("rasterio", reason="use .venv/bin/python: pip install -r requirements.txt")
+
 from rasterio.crs import CRS
 from rasterio.transform import from_origin
 import rasterio

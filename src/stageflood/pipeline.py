@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-import rasterio
 
 from stageflood.claims import require_clean, require_paths_clean
 from stageflood.compare import overlap_table
@@ -114,6 +113,8 @@ def run_stage_b_fixture(out_dir: Path) -> dict[str, Any]:
         delta_finite=np.isfinite(float(a["delta_m"])),
         thread_id="stageb.h",
     )
+    import rasterio
+
     rasters = Path(out_dir / "rasters")
     with rasterio.open(rasters / "hand.tif") as src:
         hand = src.read(1).astype(np.float64)
@@ -173,6 +174,8 @@ def run_stage_c_fixture(out_dir: Path) -> dict[str, Any]:
         huc_wide_wet=False,
         thread_id="stagec.fixture",
     )
+    import rasterio
+
     require_claims(p_as_forecast=False, hand_as_firm=False, thread_id="stagec.claims")
     rasters = Path(out_dir / "rasters")
     with rasterio.open(rasters / "wet.tif") as src:

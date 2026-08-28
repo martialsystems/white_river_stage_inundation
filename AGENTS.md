@@ -18,7 +18,7 @@ Run `stageflood.claims.scan_text` on reports, README, and figure titles. Fail cl
 
 `python3 ~/agent_laws_verify_before_done/vbd_gate.py check --app-root . --claim-done`
 
-`vbd.runtime.json` runs pytest, `scripts/run_fixture.py`, and `stageforge/scripts/sanity_stageforge.py`.
+`vbd.runtime.json` runs `.venv/bin/python -m pytest`, `scripts/run_fixture.py`, and `stageforge/scripts/sanity_stageforge.py`. Do not use stock `/usr/bin/python3 -m pytest`: it has no rasterio and dies in collection.
 
 ## GraphForge
 

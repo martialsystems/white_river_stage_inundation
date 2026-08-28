@@ -6,9 +6,6 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
-from rasterio.crs import CRS
-from rasterio.transform import from_origin
-import rasterio
 
 from stageflood.config import (
     FIXTURE_COLS,
@@ -37,10 +34,15 @@ HAND_STEP_M = 1.0
 
 
 def _transform():
+    from rasterio.transform import from_origin
+
     return from_origin(FIXTURE_WEST, FIXTURE_NORTH, TEMPLATE_RES_M, TEMPLATE_RES_M)
 
 
 def write_band(path: Path, arr: np.ndarray, *, dtype: str, nodata) -> None:
+    import rasterio
+    from rasterio.crs import CRS
+
     path.parent.mkdir(parents=True, exist_ok=True)
     profile = {
         "driver": "GTiff",

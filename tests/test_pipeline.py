@@ -2,6 +2,10 @@
 
 from pathlib import Path
 
+import pytest
+
+pytest.importorskip("rasterio", reason="use .venv/bin/python: pip install -r requirements.txt")
+
 from stageflood.config import PRIMARY_STAGE_FT
 from stageflood.pipeline import run_fixture
 

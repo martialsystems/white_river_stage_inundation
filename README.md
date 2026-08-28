@@ -15,7 +15,7 @@ python3.12 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 PYTHONPATH=src:. python3 scripts/run_fixture.py logs/stage0_fixture
-PYTHONPATH=src:. python3 -m pytest tests -q
+.venv/bin/python -m pytest tests -q
 ```
 
 Live sibling sha check (needs `~/indiana_flood_completion` rasters on disk, gitignored there):
