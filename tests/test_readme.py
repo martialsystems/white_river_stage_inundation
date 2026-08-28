@@ -23,6 +23,8 @@ def test_license_mit_and_readme_lead() -> None:
     assert "interview_note.pdf" in README
     assert "https://github.com/martialsystems/indiana_flood_completion" in README
     assert "https://gist.github.com/martialsystems/16584e78d079666f7e8994b4cc6158be" in README
+    assert "## Summary" in README
+    assert "white_river_fim_compare" in README
     assert "logs/nora_live/three_wet.png" in README
     assert "three_wet_crest_2026-08-15.png" in README
     assert "gitignored" in README
