@@ -1,18 +1,18 @@
 # Checklist
 
-Status as of **2026-08-27:** fixture Stage 0 to C and GraphForge pin. Live Nora paint not yet run.
+Status as of **2026-08-28:** 32×32 fixture (HAND 0 / 2, Δ = 1 m) and live Nora paint at 03351000 / NORI3.
 
 ## Stage 0
 
-- [x] Methodology lock (03351000, HAND < Δ, drain-to-reach, three layers)
+- [x] Methodology lock (03351000 / NORI3, WSE = 710.51 + 11.0, drain-to-reach, three layers)
 - [x] StageForge pin (sha, h_channel, claims)
-- [x] Fixture path (`scripts/run_fixture.py`)
+- [x] Fixture path (`scripts/run_fixture.py`): channel wet, bank dry
 - [x] Claim scanner
-- [ ] Live sibling sha check on disk (`check_live_sibling`)
+- [x] Live sibling band hashes (HAND, DEM, stream paint, P, zone, transform)
 - [x] Private GitHub remote (`martialsystems/white_river_stage_inundation`; MIT)
 
 ## Later
 
-- [ ] Stage A live rating + NAVD88 WSE at 11 ft
-- [ ] Stage B live `wet.tif` on the Nora window
-- [ ] Stage C live three-panel figure
+- [x] Stage A live rating + NAVD88 WSE at 11 ft (`h_channel` from DEM, Δ = 1.09 m)
+- [x] Stage B live `wet.tif` on the Nora window (1197 wet / 2604 drain-to-reach)
+- [x] Stage C live three-panel figure (`logs/nora_live/three_wet.png`)

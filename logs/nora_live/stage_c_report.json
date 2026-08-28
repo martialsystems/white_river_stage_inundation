@@ -1,0 +1,20 @@
+{
+  "figure": "logs/nora_live/three_wet.png",
+  "hand_mask_is_firm": false,
+  "hand_recomputed": false,
+  "iou_p_wet": 0.2706766917293233,
+  "iou_sfha_p": 0.20986842105263157,
+  "iou_sfha_wet": 0.7318007662835249,
+  "kind": "live",
+  "n_p_ge_t": 324,
+  "n_reach_comparable": 2604,
+  "n_sfha": 1515,
+  "n_sfha_and_wet": 1146,
+  "n_sfha_dry_at_stage": 369,
+  "n_stage_wet": 1197,
+  "n_wet_unshaded_x": 38,
+  "p_definition": "P(sfha | hydro)",
+  "p_headline_t": 0.75,
+  "p_is_forecast": false,
+  "stage": "C"
+}

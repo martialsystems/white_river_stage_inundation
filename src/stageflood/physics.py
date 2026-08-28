@@ -9,10 +9,15 @@ from stageflood.config import FT_TO_M, HYDRO_NODATA, WET_DRY, WET_NODATA, WET_WE
 from stageflood.errors import ChannelUnlockedError, GateError
 
 
-def stage_to_wse_m(*, stage_ft: float, datum_ft_navd88: float) -> float:
+def wse_ft_navd88(*, stage_ft: float, datum_ft_navd88: float) -> float:
+    """NAVD88 water-surface elevation in feet: gage zero plus stage."""
     if not np.isfinite(stage_ft) or not np.isfinite(datum_ft_navd88):
         raise GateError("stage and datum must be finite")
-    return (float(datum_ft_navd88) + float(stage_ft)) * FT_TO_M
+    return float(datum_ft_navd88) + float(stage_ft)
+
+
+def stage_to_wse_m(*, stage_ft: float, datum_ft_navd88: float) -> float:
+    return wse_ft_navd88(stage_ft=stage_ft, datum_ft_navd88=datum_ft_navd88) * FT_TO_M
 
 
 def relative_height_m(*, wse_navd88_m: float, h_channel_m: float) -> float:

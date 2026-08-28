@@ -23,11 +23,15 @@ def overlap_table(
     p_cal: np.ndarray,
     drain_to_reach: np.ndarray,
     p_t: float = P_HEADLINE_T,
+    huc_cell_count: int | None = None,
 ) -> dict[str, object]:
     drain = np.asarray(drain_to_reach, dtype=bool)
     if not drain.any():
         raise GateError("drain-to-reach is empty")
-    if drain.sum() == drain.size:
+    if huc_cell_count is not None:
+        if drain.size >= int(huc_cell_count):
+            raise GateError("C refuses a HUC-wide wet/reach mask")
+    elif int(drain.sum()) == drain.size:
         raise GateError("C refuses a HUC-wide wet/reach mask")
     w = np.asarray(wet)
     z = np.asarray(zone)

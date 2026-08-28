@@ -4,7 +4,27 @@ import numpy as np
 import pytest
 
 from stageflood.errors import ChannelUnlockedError, GateError
-from stageflood.physics import paint_wet, relative_height_m, stage_to_wse_m
+from stageflood.config import (
+    FIXTURE_DELTA_M,
+    GAGE_DATUM_FT_NAVD88,
+    NWS_FLOOD_WSE_FT_NAVD88,
+    PRIMARY_STAGE_FT,
+)
+from stageflood.physics import paint_wet, relative_height_m, stage_to_wse_m, wse_ft_navd88
+
+
+def test_wse_is_datum_plus_stage_not_channel() -> None:
+    wse_ft = wse_ft_navd88(stage_ft=PRIMARY_STAGE_FT, datum_ft_navd88=GAGE_DATUM_FT_NAVD88)
+    assert abs(wse_ft - 721.51) < 1e-9
+    assert abs(wse_ft - NWS_FLOOD_WSE_FT_NAVD88) < 1e-9
+    wse_m = stage_to_wse_m(stage_ft=PRIMARY_STAGE_FT, datum_ft_navd88=GAGE_DATUM_FT_NAVD88)
+    datum_m = GAGE_DATUM_FT_NAVD88 * 0.3048
+    double_count = relative_height_m(wse_navd88_m=wse_m, h_channel_m=datum_m)
+    h_channel = wse_m - FIXTURE_DELTA_M
+    delta = relative_height_m(wse_navd88_m=wse_m, h_channel_m=h_channel)
+    assert abs(double_count - PRIMARY_STAGE_FT * 0.3048) < 1e-9
+    assert abs(delta - FIXTURE_DELTA_M) < 1e-9
+    assert abs(h_channel - datum_m) > 1.0
 
 
 def test_relative_height_and_paint() -> None:

@@ -19,3 +19,7 @@ class ChannelUnlockedError(GateError):
 
 class RatingError(GateError):
     """Stage is off the published rating, or the rating is empty."""
+
+
+class FetchError(RuntimeError):
+    """NWIS or NHD download failed."""

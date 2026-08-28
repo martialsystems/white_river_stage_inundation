@@ -1,5 +1,5 @@
 # Copyright (c) 2026 Martial Systems LLC
-"""Tiny reach: main channel east, one tributary that must stay dry."""
+"""32x32 toy: channel HAND=0, bank HAND=2, Δ=1 m. Channel wet, bank dry."""
 
 from __future__ import annotations
 
@@ -8,29 +8,31 @@ from pathlib import Path
 import numpy as np
 
 from stageflood.config import (
+    FIXTURE_BANK_HAND_M,
     FIXTURE_COLS,
+    FIXTURE_DELTA_M,
     FIXTURE_NORTH,
     FIXTURE_ROWS,
     FIXTURE_WEST,
     FT_TO_M,
     GAGE_DATUM_FT_NAVD88,
     HYDRO_NODATA,
+    NWS_FLOOD_WSE_FT_NAVD88,
     PRIMARY_STAGE_FT,
     TEMPLATE_CRS,
     TEMPLATE_RES_M,
     ZONE_SFHA,
     ZONE_UNSHADED_X,
 )
-from stageflood.physics import relative_height_m, stage_to_wse_m
+from stageflood.errors import GateError
+from stageflood.physics import relative_height_m, stage_to_wse_m, wse_ft_navd88
 from stageflood.rating import fixture_rating, require_stage_on_rating
 
-# Stream along the south row. Reach is columns 4..14. Tributary column 0 is off-reach.
+# One channel row at the south edge. Reach is columns 8..31. Col 0 outlets west.
 STREAM_ROW = FIXTURE_ROWS - 1
-REACH_C0, REACH_C1 = 4, FIXTURE_COLS
-GAGE_COL = 8
+REACH_C0, REACH_C1 = 8, FIXTURE_COLS
+GAGE_COL = 16
 TRIB_COL = 0
-# HAND increases north of the channel, 1 m per row.
-HAND_STEP_M = 1.0
 
 
 def _transform():
@@ -81,20 +83,25 @@ def flowdir_south_then_east() -> np.ndarray:
 
 
 def hand_grid() -> np.ndarray:
-    hand = np.zeros((FIXTURE_ROWS, FIXTURE_COLS), dtype=np.float64)
-    for r in range(FIXTURE_ROWS):
-        hand[r, :] = (STREAM_ROW - r) * HAND_STEP_M
-    hand[STREAM_ROW, TRIB_COL] = 0.0
+    """HAND = 0 on the channel row, 2 m on the bank."""
+    hand = np.full((FIXTURE_ROWS, FIXTURE_COLS), FIXTURE_BANK_HAND_M, dtype=np.float64)
+    hand[STREAM_ROW, :] = 0.0
     return hand
 
 
-def dem_grid(*, stream_z_m: float) -> np.ndarray:
-    hand = hand_grid()
-    return stream_z_m + hand
+def channel_z_m() -> float:
+    """DEM at the gage cell. Not gage datum. Chosen so Δ = WSE − z = 1 m."""
+    wse = stage_to_wse_m(stage_ft=PRIMARY_STAGE_FT, datum_ft_navd88=GAGE_DATUM_FT_NAVD88)
+    return wse - FIXTURE_DELTA_M
+
+
+def dem_grid(*, stream_z_m: float | None = None) -> np.ndarray:
+    z = channel_z_m() if stream_z_m is None else float(stream_z_m)
+    return z + hand_grid()
 
 
 def drain_truth() -> np.ndarray:
-    """Cells that D8-drain to the reach window (west of col 4 outlets the other way)."""
+    """Cells that D8-drain to the reach window (west of col 8 outlets the other way)."""
     m = np.zeros((FIXTURE_ROWS, FIXTURE_COLS), dtype=bool)
     m[:, REACH_C0:] = True
     return m
@@ -118,26 +125,35 @@ def p_grid() -> np.ndarray:
 def write_fixture(out_dir: Path) -> dict[str, object]:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    stream_z_m = GAGE_DATUM_FT_NAVD88 * FT_TO_M
+    wse_ft = wse_ft_navd88(stage_ft=PRIMARY_STAGE_FT, datum_ft_navd88=GAGE_DATUM_FT_NAVD88)
+    if abs(wse_ft - NWS_FLOOD_WSE_FT_NAVD88) > 1e-9:
+        raise GateError("WSE ft is not gage zero plus flood stage")
+    wse = stage_to_wse_m(stage_ft=PRIMARY_STAGE_FT, datum_ft_navd88=GAGE_DATUM_FT_NAVD88)
+    h_channel = channel_z_m()
+    datum_m = GAGE_DATUM_FT_NAVD88 * FT_TO_M
+    if abs(h_channel - datum_m) < 0.01:
+        raise GateError("h_channel must be the DEM at the channel cell, not gage datum")
+    delta = relative_height_m(wse_navd88_m=wse, h_channel_m=h_channel)
+    if abs(delta - FIXTURE_DELTA_M) > 1e-9:
+        raise GateError(f"fixture Δ is {delta}, expected {FIXTURE_DELTA_M}")
     write_band(out_dir / "hand.tif", hand_grid(), dtype="float32", nodata=HYDRO_NODATA)
-    write_band(out_dir / "dem.tif", dem_grid(stream_z_m=stream_z_m), dtype="float32", nodata=HYDRO_NODATA)
+    write_band(out_dir / "dem.tif", dem_grid(), dtype="float32", nodata=HYDRO_NODATA)
     write_band(out_dir / "zone_class.tif", zone_grid(), dtype="uint8", nodata=255)
     write_band(out_dir / "p_calibrated.tif", p_grid(), dtype="float32", nodata=-1)
     write_band(out_dir / "flowdir.tif", flowdir_south_then_east(), dtype="int8", nodata=-1)
     write_band(out_dir / "reach_stream.tif", reach_stream_mask().astype(np.uint8), dtype="uint8", nodata=0)
     rating = fixture_rating()
     require_stage_on_rating(PRIMARY_STAGE_FT, rating)
-    wse = stage_to_wse_m(stage_ft=PRIMARY_STAGE_FT, datum_ft_navd88=GAGE_DATUM_FT_NAVD88)
-    h_channel = float(dem_grid(stream_z_m=stream_z_m)[STREAM_ROW, GAGE_COL])
-    delta = relative_height_m(wse_navd88_m=wse, h_channel_m=h_channel)
     return {
         "kind": "fixture",
         "gage_id": "03351000",
         "stage_ft": PRIMARY_STAGE_FT,
+        "wse_ft_navd88": wse_ft,
         "h_channel_m": h_channel,
+        "h_channel_is_gage_datum": False,
         "wse_m": wse,
         "delta_m": delta,
-        "stream_z_m": stream_z_m,
+        "stream_z_m": h_channel,
         "gage_row": STREAM_ROW,
         "gage_col": GAGE_COL,
         "rating": [list(p) for p in rating],

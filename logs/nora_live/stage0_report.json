@@ -1,0 +1,31 @@
+{
+  "gage_id": "03351000",
+  "gage_name": "White River near Nora, IN",
+  "gage_nws_id": "NORI3",
+  "hand_mask_is_firm": false,
+  "hand_recomputed": false,
+  "kind": "live",
+  "p_definition": "P(sfha | hydro)",
+  "p_is_forecast": false,
+  "sibling_sha": {
+    "dem": "fd14a77318bec7952500c7de6092cfdc3be3411f836ef34237a9375abf9cf731",
+    "dist_flowline": "6634b0bbfb6164eb1d60cab28e608541a956745fb173f39b9682d3ce93d7e85d",
+    "dist_stream": "1a16f292cfd2a210429636c14c99aedae405812ade6e33b01dec801745bce5ac",
+    "hand": "3fdf3694c5662da0198440cc46d6ede4e97a8497cc2782e3f6d76c9553488b7f",
+    "p_calibrated": "8e1cc7b2178192d6859b3ff6d01014019cf9c5588fbadc3d8b7e228a41ca42c3",
+    "zone_class": "1d6c6e39f8f861e71eb4da1b781a12b09a747ab01491e38d641039e75921a0f6"
+  },
+  "stage": "0",
+  "window": {
+    "col0": 1259,
+    "gage_col_w": 200,
+    "gage_row_w": 200,
+    "height": 401,
+    "north": 1926570.0,
+    "parent_cells": 20520152,
+    "row0": 1695,
+    "west": 830790.0,
+    "width": 401,
+    "window_cells": 160801
+  }
+}

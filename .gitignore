@@ -8,4 +8,7 @@ data/raw/*
 data/interim/*
 !data/interim/.gitkeep
 logs/stage0_fixture/
+logs/*/rasters/
+logs/**/*.tif
+logs/**/*.geojson
 .DS_Store

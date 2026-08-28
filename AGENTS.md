@@ -4,7 +4,7 @@ Private GitHub. MIT on this snapshot. Geography is USGS 03351000 Nora on HUC-8 0
 
 ## Formula
 
-Wet iff `HAND < Δ` and drain-to-reach, `Δ = WSE − h_channel`. Paint uses stage/WSE, not Q. `P(sfha | hydro)` is a map layer.
+WSE_ft = 710.51 + stage (NAVD88). `h_channel` is sibling DEM at the White River cell nearest the gage, not gage zero. Wet iff D8 drain-to-reach and finite HAND and `HAND < Δ`, `Δ = WSE − h_channel`. Paint uses stage/WSE, not Q. `P(sfha | hydro)` is map-completion, not water at 11 ft.
 
 ## Stages
 

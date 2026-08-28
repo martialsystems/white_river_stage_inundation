@@ -11,9 +11,9 @@ from rasterio.crs import CRS
 from rasterio.transform import from_origin
 import rasterio
 
-from stageflood.config import LOCKED_TRANSFORM_SHA256
+from stageflood.config import LOCKED_BAND_SHA256, LOCKED_TRANSFORM_SHA256
 from stageflood.errors import SiblingShaError
-from stageflood.sibling import require_sibling_sha, transform_sha256_from_raster
+from stageflood.sibling import require_band_sha, require_sibling_sha, transform_sha256_from_raster
 
 
 def _write(path: Path, *, width: int = 4, height: int = 3, crs: int = 5070) -> None:
@@ -41,3 +41,13 @@ def test_sha_mismatch_refused(tmp_path: Path) -> None:
         require_sibling_sha(p)
     with pytest.raises(SiblingShaError):
         require_sibling_sha(tmp_path / "missing.tif")
+    with pytest.raises(SiblingShaError):
+        require_band_sha(p, expected="deadbeef")
+    assert set(LOCKED_BAND_SHA256) == {
+        "hand",
+        "dem",
+        "dist_stream",
+        "dist_flowline",
+        "p_calibrated",
+        "zone_class",
+    }

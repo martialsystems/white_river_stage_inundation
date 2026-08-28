@@ -16,6 +16,7 @@ from stageflood.config import (
     GAGE_ID,
     GAGE_NAME,
     HYDRO_NODATA,
+    LOCKED_BAND_SHA256,
     P_DEFINITION,
     P_HEADLINE_T,
     PRIMARY_STAGE_FT,
@@ -27,7 +28,12 @@ from stageflood.fixture import drain_truth, write_fixture
 from stageflood.physics import paint_wet, relative_height_m, stage_to_wse_m
 from stageflood.rating import fixture_rating, require_stage_on_rating
 from stageflood.reach import drain_to_reach
-from stageflood.sibling import require_manifest_sha, require_sibling_sha, sibling_paths
+from stageflood.sibling import (
+    require_band_sha,
+    require_manifest_sha,
+    require_sibling_sha,
+    sibling_paths,
+)
 
 from stageforge.gate import require_claims, require_h_channel, require_sibling, require_stage
 
@@ -87,9 +93,11 @@ def run_stage_a_fixture(out_dir: Path) -> dict[str, Any]:
         "rating_point_stage_ft": placed[0],
         "rating_point_q_cfs": placed[1],
         "datum_ft_navd88": GAGE_DATUM_FT_NAVD88,
+        "wse_ft_navd88": GAGE_DATUM_FT_NAVD88 + PRIMARY_STAGE_FT,
         "wse_m": wse,
         "h_channel_m": h_channel,
         "h_channel_locked": True,
+        "h_channel_is_gage_datum": False,
         "delta_m": delta,
         "p_is_forecast": False,
     }
@@ -236,10 +244,10 @@ def run_fixture(out_dir: Path) -> dict[str, Any]:
 def check_live_sibling(root: Path | None = None) -> dict[str, str]:
     paths = sibling_paths(root)
     require_manifest_sha(paths["stack_manifest"])
-    shas = {
-        "hand": require_sibling_sha(paths["hand"]),
-        "p_calibrated": require_sibling_sha(paths["p_calibrated"]),
-        "zone_class": require_sibling_sha(paths["zone_class"]),
-    }
+    shas: dict[str, str] = {}
+    for name, expected_band in LOCKED_BAND_SHA256.items():
+        path = paths[name]
+        require_sibling_sha(path)
+        shas[name] = require_band_sha(path, expected=expected_band)
     require_sibling(sibling_sha_ok=True, thread_id="live.sibling")
     return shas

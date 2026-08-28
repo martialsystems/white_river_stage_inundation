@@ -1,0 +1,15 @@
+{
+  "delta_m": 1.091937697265621,
+  "hand_mask_is_firm": false,
+  "hand_recomputed": false,
+  "huc_wide": false,
+  "kind": "live",
+  "n_drain": 2604,
+  "n_huc_cells": 20520152,
+  "n_wet": 1197,
+  "n_window_cells": 160801,
+  "p_is_forecast": false,
+  "stage": "B",
+  "wet_path": "logs/nora_live/rasters/wet.tif",
+  "wet_rule": "D8 drain-to-reach and finite HAND and HAND < \u0394; not Euclidean to the gage"
+}

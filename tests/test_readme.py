@@ -13,5 +13,6 @@ def test_license_mit_and_readme_lead() -> None:
     assert "03351000" in README
     assert "HAND" in README
     assert "P(sfha | hydro)" in README
+    assert "not water at 11 ft" in README
     assert "indiana_flood_completion" in README
     assert ".venv/bin/python -m pytest tests -q" in README
