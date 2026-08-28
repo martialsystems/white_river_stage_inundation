@@ -35,7 +35,7 @@ Interview note: [docs/interview_note.pdf](docs/interview_note.pdf). Two figures,
 
 ## GraphForge
 
-Pin: `stageforge/`. Three refuse laws: sibling template sha before paint, `h_channel` before the wet mask, `P(sfha | hydro)` is a map layer, and the HAND wet mask is not a FIRM. Verify-before-done is the finish gate.
+Pin: `stageforge/`. Refuse laws: sibling template sha before paint, `h_channel` before the wet mask, `P(sfha | hydro)` is a map layer, and the HAND wet mask is not a FIRM. Verify-before-done is the finish gate.
 
 ## Legal
 
