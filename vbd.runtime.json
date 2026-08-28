@@ -24,6 +24,19 @@
       "argv": [".venv/bin/python", "stageforge/scripts/sanity_stageforge.py"],
       "timeout_s": 60,
       "paths": ["stageforge/**", "tests/test_stageforge_laws.py"]
+    },
+    {
+      "id": "interview-note",
+      "argv": [".venv/bin/python", "scripts/build_interview_note.py", "docs/interview_note.pdf"],
+      "timeout_s": 60,
+      "paths": [
+        "scripts/build_interview_note.py",
+        "docs/**",
+        "logs/nora_live/*.png",
+        "logs/nora_live/*.json",
+        "src/stageflood/compare.py",
+        "src/stageflood/config.py"
+      ]
     }
   ]
 }

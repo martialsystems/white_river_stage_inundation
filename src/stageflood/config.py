@@ -46,6 +46,10 @@ P_DEFINITION = "P(sfha | hydro)"
 LOCKED_TRANSFORM_SHA256 = (
     "479ac37628bfd7e5d409f6108ae6ba1805acfd37ecdc7093785db06ac9ebec22"
 )
+# v1 flood-stage three-panel. Interview note and crest refuse a rewrite.
+LOCKED_V1_PNG_SHA256 = (
+    "cab5c15439bb322b5116ae158f58c7777acd5634db7e351bdd47dd6f68d720ab"
+)
 # Band tobytes() sha256. Sibling has no flowdir.tif; dist_stream / dist_flowline are the stream paint.
 LOCKED_BAND_SHA256 = {
     "hand": "3fdf3694c5662da0198440cc46d6ede4e97a8497cc2782e3f6d76c9553488b7f",

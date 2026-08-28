@@ -81,6 +81,7 @@ Read-only from `~/indiana_flood_completion/data/interim/`. `check_live_sibling()
 
 ## Revisions
 
+- 2026-08-28: Interview note PDF packages the frozen pair. No third Delta.
 - 2026-08-28: Crest PNG sentence: extra wet cells filled leftover SFHA (dry 369 to 50); unshaded X 38 to 338; IoU 0.73 to 0.76 on drain-to-reach. Tree stops: two files, two Δ.
 - 2026-08-28: Second PNG at NWS NORI3 crest 21.18 ft (2026-08-15, provisional) on the frozen v1 window. New Δ, new file. Not a new model.
 - 2026-08-28: Caption live Δ = 1.09 m and 3DEP +2.26 m on `three_wet.png`. Wet mask is cells below 721.51 ft WSE on drain-to-reach. IoU reported on drain-to-reach only. Window D8 not byte-identical to sibling Stage B.

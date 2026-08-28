@@ -21,6 +21,7 @@ pip install -r requirements.txt
 PYTHONPATH=src:. python3 scripts/run_fixture.py logs/stage0_fixture
 PYTHONPATH=src:. python3 scripts/run_live.py logs/nora_live
 PYTHONPATH=src:. python3 scripts/run_crest.py logs/nora_live
+PYTHONPATH=src:. python3 scripts/build_interview_note.py
 .venv/bin/python -m pytest tests -q
 ```
 
@@ -29,6 +30,8 @@ Live sibling freeze (HAND, DEM, stream paint, P, zone, transform `479ac376…`):
 ```bash
 PYTHONPATH=src:. python3 -c "from stageflood.pipeline import check_live_sibling; print(check_live_sibling())"
 ```
+
+Interview note: [docs/interview_note.pdf](docs/interview_note.pdf). Two figures, two Delta values, leftover-SFHA split. v1 PNG frozen.
 
 ## GraphForge
 
