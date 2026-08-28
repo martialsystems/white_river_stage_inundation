@@ -31,7 +31,7 @@ Live sibling freeze (HAND, DEM, stream paint, P, zone, transform `479ac376…`):
 PYTHONPATH=src:. python3 -c "from stageflood.pipeline import check_live_sibling; print(check_live_sibling())"
 ```
 
-Interview note: [docs/interview_note.pdf](docs/interview_note.pdf). Two figures, two Delta values, leftover-SFHA split. v1 PNG frozen.
+Interview note: [docs/interview_note.pdf](docs/interview_note.pdf). Two figures, two Delta values, leftover-SFHA split. v1 PNG frozen. Combined with the HUC map-completion note in public `indiana_flood_completion` as `docs/interview_note.pdf`.
 
 ## GraphForge
 
