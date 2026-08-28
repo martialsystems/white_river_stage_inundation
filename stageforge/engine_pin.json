@@ -1,0 +1,11 @@
+{
+  "engine": "graphforge",
+  "github": "martialsystems/graphforge",
+  "track": "main",
+  "remote": "origin",
+  "min_version": "0.6.0",
+  "policy": "report_only",
+  "local_candidates": ["~/graphforge"],
+  "require_product_laws": true,
+  "note": "StageForge: sibling sha before paint, h_channel before wet mask, P not a forecast / HAND not a FIRM. Verify-before-done is the finish gate."
+}
