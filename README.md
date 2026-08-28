@@ -45,6 +45,8 @@ Live rasters under `logs/*/rasters/` and `*.tif` stay gitignored; `logs/nora_liv
 
 Related tree: https://github.com/martialsystems/indiana_flood_completion (HUC-8 05120201 map completion; same HAND grid).
 
+Three-tree summary: https://gist.github.com/martialsystems/16584e78d079666f7e8994b4cc6158be
+
 Limitations:
 
 - 30 m HAND: the unresolved 7.4 ft of stage is inside the channel, not on the floodplain.
