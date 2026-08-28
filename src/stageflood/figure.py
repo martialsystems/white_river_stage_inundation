@@ -21,6 +21,13 @@ from stageflood.config import (
 from stageflood.errors import GateError
 
 
+def stage_txt(stage_ft: float) -> str:
+    h = float(stage_ft)
+    if abs(h - round(h)) < 1e-9:
+        return f"{h:.0f}"
+    return f"{h:.2f}"
+
+
 def depth_note(
     *,
     delta_m: float,
@@ -31,23 +38,30 @@ def depth_note(
     """Caption Δ as water above the DEM, not stage-as-depth."""
     above_ft = float(delta_m) / FT_TO_M
     unresolved_ft = float(stage_ft) - above_ft
+    st = stage_txt(stage_ft)
     return (
         f"Δ = {float(delta_m):.2f} m ({above_ft:.1f} ft of water above the DEM). "
         f"{dem_source} is {float(dem_minus_datum_m):.2f} m above gage zero. "
-        f"{unresolved_ft:.1f} ft of the {float(stage_ft):.0f} ft stage is inside the unresolved channel."
+        f"{unresolved_ft:.1f} ft of the {st} ft stage is inside the unresolved channel."
     )
 
 
-def reach_title(*, wse_ft: float) -> str:
+def reach_title(
+    *,
+    wse_ft: float,
+    stage_ft: float = PRIMARY_STAGE_FT,
+    stage_label: str = PRIMARY_STAGE_LABEL,
+) -> str:
     return (
-        f"{GAGE_ID} {PRIMARY_STAGE_LABEL} {PRIMARY_STAGE_FT} ft: "
+        f"{GAGE_ID} {stage_label} {stage_txt(stage_ft)} ft: "
         f"cells below {float(wse_ft):.2f} ft WSE on the reach"
     )
 
 
-def reach_footer(*, iou_sfha_wet: float) -> str:
+def reach_footer(*, iou_sfha_wet: float, stage_ft: float = PRIMARY_STAGE_FT) -> str:
     return (
-        f"{P_DEFINITION} ≥ {P_HEADLINE_T} is sibling map-completion, not water at 11 ft. "
+        f"{P_DEFINITION} ≥ {P_HEADLINE_T} is sibling map-completion, "
+        f"not water at {stage_txt(stage_ft)} ft. "
         f"IoU SFHA vs stage wet = {float(iou_sfha_wet):.2f} on drain-to-reach cells only."
     )
 
@@ -63,6 +77,8 @@ def write_three_panel(
     delta_line: str,
     footer: str,
     huc_cell_count: int | None = None,
+    stage_ft: float = PRIMARY_STAGE_FT,
+    wet_caption: str = "Stage wet: HAND inundation\nat NWS flood stage",
 ) -> Path:
     require_clean(title, source="figure_title")
     require_clean(delta_line, source="figure_delta")
@@ -90,12 +106,12 @@ def write_three_panel(
         (
             axes[1],
             p_show,
-            f"{P_DEFINITION} ≥ {P_HEADLINE_T}: map-completion,\nnot water at 11 ft",
+            f"{P_DEFINITION} ≥ {P_HEADLINE_T}: map-completion,\nnot water at {stage_txt(stage_ft)} ft",
             "plasma",
             0.0,
             1.0,
         ),
-        (axes[2], wet_b, "Stage wet: HAND inundation\nat NWS flood stage", "cividis", 0.0, 1.0),
+        (axes[2], wet_b, wet_caption, "cividis", 0.0, 1.0),
     )
     for ax, data, lab, cmap, vmin, vmax in panels:
         require_clean(lab, source="figure_panel")

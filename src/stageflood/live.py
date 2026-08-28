@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,11 @@ import numpy as np
 from stageflood.claims import require_clean, require_paths_clean
 from stageflood.compare import overlap_table
 from stageflood.config import (
+    CREST_DATE,
+    CREST_LABEL,
+    CREST_SOURCE,
+    CREST_STAGE_FT,
+    CREST_WSE_FT_NAVD88,
     FT_TO_M,
     GAGE_DATUM_FT_NAVD88,
     GAGE_ID,
@@ -30,8 +36,8 @@ from stageflood.config import (
     WET_NODATA,
 )
 from stageflood.d8 import flowdir_from_dem
-from stageflood.errors import ChannelUnlockedError, GateError
-from stageflood.figure import depth_note, reach_footer, reach_title, write_three_panel
+from stageflood.errors import ChannelUnlockedError, GateError, SiblingShaError
+from stageflood.figure import depth_note, reach_footer, reach_title, stage_txt, write_three_panel
 from stageflood.http import GetBytes, GetJson
 from stageflood.nhd import fetch_white_river_flowlines, ftype_counts, rasterize_white_river
 from stageflood.nwis import fetch_exsa_rating
@@ -419,6 +425,172 @@ def run_live(
     run_stage_b_live(out_dir)
     print("Stage C: three-layer compare", flush=True)
     return run_stage_c_live(out_dir)
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def run_crest_figure(
+    out_dir: Path,
+    *,
+    sibling_root: Path | None = None,
+    get_bytes: GetBytes | None = None,
+    rating: tuple[RatingPoint, ...] | None = None,
+    check_sibling: bool = True,
+    stage_ft: float = CREST_STAGE_FT,
+    crest_date: str = CREST_DATE,
+    stage_label: str = CREST_LABEL,
+) -> dict[str, Any]:
+    """Second PNG: same window and h_channel, new Δ. Does not rewrite v1 three_wet.png."""
+    out_dir = Path(out_dir)
+    v1_fig = out_dir / "three_wet.png"
+    dest_fig = out_dir / f"three_wet_crest_{crest_date}.png"
+    if dest_fig.resolve() == v1_fig.resolve():
+        raise GateError("crest figure must not replace v1 three_wet.png")
+    if not (out_dir / "stage_a_report.json").is_file():
+        raise ChannelUnlockedError("run v1 live (stage A) before the crest figure")
+    a = json.loads((out_dir / "stage_a_report.json").read_text(encoding="utf-8"))
+    if not a.get("h_channel_locked"):
+        raise ChannelUnlockedError("v1 stage A did not lock h_channel")
+    b_path = out_dir / "stage_b_report.json"
+    if not b_path.is_file():
+        raise GateError("run v1 live (stage B) before the crest figure")
+    b = json.loads(b_path.read_text(encoding="utf-8"))
+    if b.get("huc_wide"):
+        raise GateError("crest refuses a HUC-wide wet mask")
+    if check_sibling:
+        shas = check_live_sibling(sibling_root)
+        locked = json.loads((out_dir / "stage0_report.json").read_text(encoding="utf-8")).get(
+            "sibling_sha"
+        ) or {}
+        if locked and shas != locked:
+            raise SiblingShaError("sibling hashes moved since v1")
+    v1_sha = _sha256_file(v1_fig) if v1_fig.is_file() else None
+    curve = rating if rating is not None else fetch_exsa_rating(get_bytes=get_bytes)
+    placed = require_stage_on_rating(stage_ft, curve)
+    h_channel = float(a["h_channel_m"])
+    wse_ft = wse_ft_navd88(stage_ft=stage_ft, datum_ft_navd88=GAGE_DATUM_FT_NAVD88)
+    if abs(wse_ft - (GAGE_DATUM_FT_NAVD88 + float(stage_ft))) > 1e-9:
+        raise GateError("crest WSE ft is not gage zero plus crest stage")
+    wse = stage_to_wse_m(stage_ft=stage_ft, datum_ft_navd88=GAGE_DATUM_FT_NAVD88)
+    delta = relative_height_m(wse_navd88_m=wse, h_channel_m=h_channel)
+    require_h_channel(
+        h_channel_locked=True,
+        delta_finite=np.isfinite(delta),
+        thread_id="crest.h",
+    )
+    require_claims(p_as_forecast=False, hand_as_firm=False, thread_id="crest.claims")
+    import rasterio
+
+    rasters = out_dir / "rasters"
+    with rasterio.open(rasters / "hand.tif") as src:
+        hand = src.read(1).astype(np.float64)
+        if src.nodata is not None:
+            hand[hand == src.nodata] = np.nan
+        profile = src.profile
+    with rasterio.open(rasters / "flowdir.tif") as src:
+        flowdir = src.read(1)
+    with rasterio.open(rasters / "reach_stream.tif") as src:
+        reach = src.read(1) == 1
+    with rasterio.open(rasters / "zone_class.tif") as src:
+        zone = src.read(1)
+    with rasterio.open(rasters / "p_calibrated.tif") as src:
+        p_cal = src.read(1)
+    drain = drain_to_reach(flowdir, reach, np.isfinite(hand))
+    wet = paint_wet(
+        hand,
+        delta_m=delta,
+        drain_to_reach=drain,
+        h_channel_locked=True,
+    )
+    wet_path = rasters / f"wet_crest_{crest_date}.tif"
+    profile.update(dtype="uint8", nodata=WET_NODATA, count=1, compress="deflate")
+    with rasterio.open(wet_path, "w", **profile) as dst:
+        dst.write(wet, 1)
+    huc_cells = int(b["n_huc_cells"])
+    table = overlap_table(
+        wet=wet,
+        zone=zone,
+        p_cal=p_cal,
+        drain_to_reach=drain,
+        huc_cell_count=huc_cells,
+    )
+    dem_minus_datum_m = float(a["dem_minus_datum_m"])
+    title = (
+        f"{GAGE_ID} {stage_label} {stage_txt(stage_ft)} ft ({crest_date}, NWS provisional): "
+        f"cells below {wse_ft:.2f} ft WSE on the reach"
+    )
+    dem_source = "3DEP at the channel" if a.get("kind") == "live" else "Channel DEM"
+    delta_line = depth_note(
+        delta_m=delta,
+        dem_minus_datum_m=dem_minus_datum_m,
+        stage_ft=stage_ft,
+        dem_source=dem_source,
+    )
+    footer = reach_footer(iou_sfha_wet=float(table["iou_sfha_wet"]), stage_ft=stage_ft)
+    fig = write_three_panel(
+        dest_fig,
+        wet=wet,
+        zone=zone,
+        p_cal=p_cal,
+        drain_to_reach=drain,
+        title=title,
+        delta_line=delta_line,
+        footer=footer,
+        huc_cell_count=huc_cells,
+        stage_ft=stage_ft,
+        wet_caption=f"Stage wet: HAND inundation\nat {stage_label}",
+    )
+    if v1_fig.is_file() and v1_sha is not None and _sha256_file(v1_fig) != v1_sha:
+        raise GateError("crest run mutated v1 three_wet.png")
+    n_v1_wet = int(b.get("n_wet") or 0)
+    report = {
+        "kind": "crest",
+        "v1_frozen": True,
+        "gage_id": GAGE_ID,
+        "gage_nws_id": GAGE_NWS_ID,
+        "stage_ft": float(stage_ft),
+        "stage_label": stage_label,
+        "crest_date": crest_date,
+        "crest_source": CREST_SOURCE,
+        "crest_wse_ft_navd88": round(
+            CREST_WSE_FT_NAVD88 if abs(stage_ft - CREST_STAGE_FT) < 1e-9 else wse_ft, 2
+        ),
+        "rating_point_stage_ft": placed[0],
+        "rating_point_q_cfs": placed[1],
+        "wse_ft_navd88": round(wse_ft, 2),
+        "wse_m": wse,
+        "h_channel_m": h_channel,
+        "h_channel_locked": True,
+        "h_channel_is_gage_datum": bool(a.get("h_channel_is_gage_datum") is True),
+        "delta_m": delta,
+        "dem_minus_datum_m": dem_minus_datum_m,
+        "wet_path": str(wet_path),
+        "figure": str(fig),
+        "v1_figure": str(v1_fig),
+        "v1_figure_sha256": v1_sha,
+        "n_wet": int((wet == 1).sum()),
+        "n_v1_wet": n_v1_wet,
+        "hand_recomputed": False,
+        "window_recomputed": False,
+        "d8_recomputed": False,
+        "d8_byte_identical_to_sibling_stage_b": False,
+        "p_is_forecast": False,
+        "hand_mask_is_firm": False,
+        "figure_title": title,
+        "figure_delta_line": delta_line,
+        "figure_footer": footer,
+        "wet_meaning": (
+            f"cells below {wse_ft:.2f} ft WSE among cells that drain to this "
+            f"{float(a.get('reach_along_m') or REACH_ALONG_M) / 1000.0:.0f} km reach"
+        ),
+        **table,
+    }
+    dest_json = out_dir / f"crest_{crest_date}_report.json"
+    _write_json(dest_json, report)
+    require_paths_clean([dest_json])
+    return report
 
 
 def run_window_stages(

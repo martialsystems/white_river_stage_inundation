@@ -23,7 +23,7 @@ Stage-driven wet area on **one White River reach** at **USGS 03351000** (Nora). 
 | NWS minor WSE | 721.51 ft NAVD88 (= 710.51 + 11.0) |
 | Why Nora | NWIS publishes gage height and NAVD88 water-surface elevation |
 
-Muncie 03347000 and Centerton 03354000 stay out of v1. Observed crest near 21 ft is a later figure, not a replacement for 11 ft.
+Muncie 03347000 and Centerton 03354000 stay out of v1. The August 2026 crest is a second PNG on the frozen v1 window, not a replacement for 11 ft.
 
 ## Reach
 
@@ -67,6 +67,8 @@ Overlap: counts and IoU on drain-to-reach cells only, plus SFHA-dry-at-stage and
 
 The three-panel figure prints Δ and the 3DEP-minus-datum offset so the 1.09 m water depth is read as the grid result.
 
+v1 (`three_wet.png`) stays the 11 ft flood-stage figure. A second file (`three_wet_crest_2026-08-15.png`) paints the same drain-to-reach window at NWS NORI3 crest 21.18 ft on 2026-08-15 (provisional): WSE = 731.69 ft NAVD88, same `h_channel`, new Δ. Same sibling hashes. HAND and the window D8 are not recomputed. Discharge is still not the paint.
+
 ## Claims
 
 Banned in reports, README, and figure titles: 100-year exceedance, `P(sfha | hydro)` as a forecast, training a flood model on FEMA, HAND bathtub as a FIRM, site-level flood risk, casualty/climate/population-at-risk.
@@ -79,6 +81,7 @@ Read-only from `~/indiana_flood_completion/data/interim/`. `check_live_sibling()
 
 ## Revisions
 
+- 2026-08-28: Second PNG at NWS NORI3 crest 21.18 ft (2026-08-15, provisional) on the frozen v1 window. New Δ, new file. Not a new model.
 - 2026-08-28: Caption live Δ = 1.09 m and 3DEP +2.26 m on `three_wet.png`. Wet mask is cells below 721.51 ft WSE on drain-to-reach. IoU reported on drain-to-reach only. Window D8 not byte-identical to sibling Stage B.
 - 2026-08-28: Lock NAVD88 identity WSE = 710.51 + 11.0 = 721.51 ft. `h_channel` is sibling DEM at the White River cell, not gage datum. 5 km mainstem window. Three captions so P is not water at 11 ft. Band hashes on HAND/DEM/stream paint/P/zone. Live run: White River ftype 558 only, rating 11.00 ft at 10245.31 cfs, Δ = 1.09 m, 1197 wet cells on 2604 drain-to-reach cells.
 - 2026-08-27: Lock Nora reach, HAND < Δ, three-layer compare, GraphForge pin for sha / h_channel / claims.

@@ -16,3 +16,4 @@ Status as of **2026-08-28:** 32×32 fixture (HAND 0 / 2, Δ = 1 m) and live Nora
 - [x] Stage A live rating + NAVD88 WSE at 11 ft (`h_channel` from DEM, Δ = 1.09 m)
 - [x] Stage B live `wet.tif` on the Nora window (1197 wet / 2604 drain-to-reach)
 - [x] Stage C live three-panel figure (`logs/nora_live/three_wet.png`) with Δ = 1.09 m and 3DEP +2.26 m on the figure
+- [x] Crest PNG 21.18 ft 2026-08-15 on the same window (`three_wet_crest_2026-08-15.png`); v1 file frozen

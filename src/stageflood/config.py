@@ -17,6 +17,12 @@ PRIMARY_STAGE_FT = 11.0
 PRIMARY_STAGE_LABEL = "NWS flood stage"
 # Identity: NWS minor flooding WSE = gage zero + 11.0 ft, both NAVD88.
 NWS_FLOOD_WSE_FT_NAVD88 = GAGE_DATUM_FT_NAVD88 + PRIMARY_STAGE_FT
+# Second figure only. v1 stays 11 ft. NWS NORI3 recent crest, provisional.
+CREST_STAGE_FT = 21.18
+CREST_DATE = "2026-08-15"
+CREST_LABEL = "August 2026 crest"
+CREST_SOURCE = "NWS NORI3 recent crest, provisional"
+CREST_WSE_FT_NAVD88 = round(GAGE_DATUM_FT_NAVD88 + CREST_STAGE_FT, 2)
 FT_TO_M = 0.3048
 # 5 km of White River mainstem, inside the 2 to 5 km flat-WSE window.
 REACH_ALONG_M = 5000.0
