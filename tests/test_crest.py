@@ -96,6 +96,8 @@ def test_crest_png_leaves_v1_figure(tmp_path: Path) -> None:
     assert "21.18" in crest["figure_title"]
     assert "Δ = 4.10 m" in crest["figure_delta_line"]
     assert "not water at 21.18 ft" in crest["figure_footer"]
+    assert "leftover SFHA" in crest["figure_footer"]
+    assert "unshaded X" in crest["figure_footer"]
     import rasterio
 
     with rasterio.open(tmp_path / "rasters" / f"wet_crest_{CREST_DATE}.tif") as src:

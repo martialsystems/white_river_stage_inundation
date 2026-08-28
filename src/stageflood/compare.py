@@ -68,3 +68,19 @@ def overlap_table(
         "iou_p_wet": _iou(b, c),
         "iou_sfha_p": _iou(a, b),
     }
+
+
+def pair_fill_sentence(*, baseline: dict, later: dict) -> str:
+    """One sentence: leftover SFHA fill vs unshaded X, IoU on drain-to-reach."""
+    extra = int(later["n_stage_wet"]) - int(baseline["n_stage_wet"])
+    dry0 = int(baseline["n_sfha_dry_at_stage"])
+    dry1 = int(later["n_sfha_dry_at_stage"])
+    x0 = int(baseline["n_wet_unshaded_x"])
+    x1 = int(later["n_wet_unshaded_x"])
+    iou0 = float(baseline["iou_sfha_wet"])
+    iou1 = float(later["iou_sfha_wet"])
+    return (
+        f"Extra {extra} wet cells filled leftover SFHA (dry {dry0} to {dry1}); "
+        f"unshaded X wet {x0} to {x1}. "
+        f"IoU {iou0:.2f} to {iou1:.2f} on drain-to-reach."
+    )

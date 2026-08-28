@@ -11,7 +11,7 @@ from typing import Any
 import numpy as np
 
 from stageflood.claims import require_clean, require_paths_clean
-from stageflood.compare import overlap_table
+from stageflood.compare import overlap_table, pair_fill_sentence
 from stageflood.config import (
     CREST_DATE,
     CREST_LABEL,
@@ -459,6 +459,10 @@ def run_crest_figure(
     b = json.loads(b_path.read_text(encoding="utf-8"))
     if b.get("huc_wide"):
         raise GateError("crest refuses a HUC-wide wet mask")
+    c_path = out_dir / "stage_c_report.json"
+    if not c_path.is_file():
+        raise GateError("run v1 live (stage C) before the crest figure")
+    c = json.loads(c_path.read_text(encoding="utf-8"))
     if check_sibling:
         shas = check_live_sibling(sibling_root)
         locked = json.loads((out_dir / "stage0_report.json").read_text(encoding="utf-8")).get(
@@ -528,7 +532,12 @@ def run_crest_figure(
         stage_ft=stage_ft,
         dem_source=dem_source,
     )
-    footer = reach_footer(iou_sfha_wet=float(table["iou_sfha_wet"]), stage_ft=stage_ft)
+    pair = pair_fill_sentence(baseline=c, later=table)
+    footer = (
+        reach_footer(iou_sfha_wet=float(table["iou_sfha_wet"]), stage_ft=stage_ft)
+        + "\n"
+        + pair
+    )
     fig = write_three_panel(
         dest_fig,
         wet=wet,
@@ -581,6 +590,7 @@ def run_crest_figure(
         "figure_title": title,
         "figure_delta_line": delta_line,
         "figure_footer": footer,
+        "pair_fill": pair,
         "wet_meaning": (
             f"cells below {wse_ft:.2f} ft WSE among cells that drain to this "
             f"{float(a.get('reach_along_m') or REACH_ALONG_M) / 1000.0:.0f} km reach"

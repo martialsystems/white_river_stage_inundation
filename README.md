@@ -4,7 +4,7 @@ One reach. One gage. USGS **03351000** / NWS **NORI3** White River near Nora, IN
 
 Live Δ is **1.09 m**: 3DEP at the channel sits 2.26 m above gage zero, so flood stage on this 30 m grid is 3.6 ft of water above the DEM. The wet mask is cells below a 721.51 ft water surface among drain-to-reach cells (1197 / 2604), not 11 ft of inundation. IoU vs SFHA is 0.73 on drain-to-reach cells only. v1 figure: `logs/nora_live/three_wet.png`.
 
-A second PNG uses the same window, hashes, and `h_channel` at the NWS NORI3 **21.18 ft** crest of **2026-08-15** (provisional). WSE = 731.69 ft NAVD88. New Δ, new file `logs/nora_live/three_wet_crest_2026-08-15.png`. Same model. v1 stays frozen.
+A second PNG uses the same window, hashes, and `h_channel` at the NWS NORI3 **21.18 ft** crest of **2026-08-15** (provisional). WSE = 731.69 ft NAVD88. New Δ, new file `logs/nora_live/three_wet_crest_2026-08-15.png`. Extra 679 wet cells filled leftover SFHA (dry 369 to 50); unshaded X wet 38 to 338; IoU 0.73 to 0.76 on drain-to-reach. Same model. v1 stays frozen. This tree stops at those two figures.
 
 Sibling `indiana_flood_completion` stays frozen. This tree does not recompute HAND, does not train on FEMA, and does not paint the whole HUC.
 
