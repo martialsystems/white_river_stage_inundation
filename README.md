@@ -106,4 +106,4 @@ Pin: `stageforge/`. Verify-before-done is the finish gate.
 
 Copyright (c) 2026 Martial Systems LLC. MIT. See [LICENSE](LICENSE).
 
-Lanes (maps / White River Q / precip): https://github.com/martialsystems
+Research index: https://github.com/martialsystems/.github/blob/main/RESEARCH.md
