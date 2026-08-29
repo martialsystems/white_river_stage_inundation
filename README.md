@@ -106,4 +106,4 @@ Pin: `stageforge/`. Verify-before-done is the finish gate.
 
 Copyright (c) 2026 Martial Systems LLC. MIT. See [LICENSE](LICENSE).
 
-Research index: https://github.com/martialsystems/.github/blob/main/RESEARCH.md
+Research index: https://gist.github.com/martialsystems/66b896b0a4a0b8cba2b478aef64312f3
