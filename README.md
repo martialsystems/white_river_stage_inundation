@@ -83,7 +83,7 @@ PYTHONPATH=src:. python3 scripts/run_fixture.py logs/stage0_fixture
 
 Hard gate: fixture channel wet and bank dry, claim scan clean, product laws allow Stage 0. See METHODOLOGY.md.
 
-Live sibling rasters (gitignored in [![indiana_flood_completion](https://img.shields.io/badge/indiana__flood__completion-2e7d32?style=for-the-badge)](https://github.com/martialsystems/indiana_flood_completion)):
+Live sibling rasters (gitignored in [Upper White floodplain completion](https://github.com/martialsystems/indiana_flood_completion)):
 
 ```bash
 PYTHONPATH=src:. python3 -c "from stageflood.pipeline import check_live_sibling; print(check_live_sibling())"
