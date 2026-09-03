@@ -53,7 +53,7 @@ Three trees on one 30 m HAND grid (HUC-8 05120201). This repo is Nora stage inun
 | [white_river_stage_inundation](https://github.com/martialsystems/white_river_stage_inundation) | Which cells on one White River reach are wet at USGS 03351000 stage 11.00 ft and at 21.18 ft? |
 | [white_river_fim_compare](https://github.com/martialsystems/white_river_fim_compare) | Does that HAND bathtub sit in the same neighborhood as USGS SIR 2011-5138 on the Nora window? |
 
-Write-up: https://gist.github.com/martialsystems/16584e78d079666f7e8994b4cc6158be
+[![Maps writeup](https://img.shields.io/badge/Maps_writeup-2e7d32?style=for-the-badge)](https://gist.github.com/martialsystems/16584e78d079666f7e8994b4cc6158be)
 
 Limitations:
 
@@ -83,7 +83,7 @@ PYTHONPATH=src:. python3 scripts/run_fixture.py logs/stage0_fixture
 
 Hard gate: fixture channel wet and bank dry, claim scan clean, product laws allow Stage 0. See METHODOLOGY.md.
 
-Live sibling rasters (gitignored in https://github.com/martialsystems/indiana_flood_completion):
+Live sibling rasters (gitignored in [![indiana_flood_completion](https://img.shields.io/badge/indiana__flood__completion-2e7d32?style=for-the-badge)](https://github.com/martialsystems/indiana_flood_completion)):
 
 ```bash
 PYTHONPATH=src:. python3 -c "from stageflood.pipeline import check_live_sibling; print(check_live_sibling())"
@@ -106,4 +106,4 @@ Pin: `stageforge/`. Verify-before-done is the finish gate.
 
 Copyright (c) 2026 Martial Systems LLC. MIT. See [LICENSE](LICENSE).
 
-Research index: https://gist.github.com/martialsystems/66b896b0a4a0b8cba2b478aef64312f3
+[![Open the research console](https://img.shields.io/badge/Open_the_research_console-2e7d32?style=for-the-badge)](https://martialsystems.github.io/indiana_wx_pages/)
